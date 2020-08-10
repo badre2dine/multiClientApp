@@ -5,10 +5,11 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.css'
 import Counter from './components/counter';
+import Chat from './components/chat';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Counter />
+    <Counter></Counter>
   </React.StrictMode>,
   document.getElementById('root')
 );

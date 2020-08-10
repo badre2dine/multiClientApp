@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import axios from 'axios'
 class Counter extends Component {
     state = { 
-        count : 1,
-        imageUrl: 'https://picsum.photos/200'
+        count : 0,
+        
      }
 
      handleIncrement = () =>{
@@ -22,10 +22,10 @@ class Counter extends Component {
              className="btn btn-secondary btn-sm">start </button>
              <button
              onClick={this.stop}
-             className="btn btn-secondary btn-sm">stop </button>
+             className="btn btn-secondary btn-sm">stop</button>
              <button
              onClick={this.callName}
-             className="btn btn-secondary btn-sm">call </button>
+             className="btn btn-secondary btn-sm">no  </button>
         </div>
         
          );
@@ -42,10 +42,9 @@ class Counter extends Component {
     
         
     
-        axios.get(`strat`)
+        axios.get(`https://back-end-dot-servertest-285416.nw.r.appspot.com/start`)
           .then(res => {
-            console.log(res);
-            console.log(res.data);
+            this.setState({count : res.data.some})
           })
       }
       stop = event => {
@@ -53,10 +52,9 @@ class Counter extends Component {
     
         
     
-        axios.get(`stop`)
+        axios.get(`https://back-end-dot-servertest-285416.nw.r.appspot.com/stop`)
           .then(res => {
-            console.log(res);
-            console.log(res.data);
+            this.setState({count : res.data.some})
           })
       }
       callName = event =>  { 

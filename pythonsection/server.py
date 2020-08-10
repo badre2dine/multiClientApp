@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask,jsonify
+import flask
 import threading
 import time
 
@@ -22,8 +23,9 @@ def hello_world():
     threads[k-1].start()
     
     k=k+1
-    print (threading.active_count())
-    return {"k": k-1}
+    response = jsonify({'some': threading.active_count()})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 @app.route('/stop')
 def stop():
@@ -32,7 +34,9 @@ def stop():
     threads[k-2].do_run = False
     threads.pop(k-2)
     k=k-1
-    return 'stop'
+    response = jsonify({'some': threading.active_count()})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 app.run(debug=True)
 
 
