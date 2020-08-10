@@ -1,9 +1,10 @@
 # cloudbuild.yaml 
 steps:
-- name: 'gcr.io/cloud-builders/my-app/npm'
+- name: 'gcr.io/cloud-builders/npm'
+  dir : '/my-app'
   args: ["install"]
-- name: 'gcr.io/cloud-builders/my-app/npm'
+- name: 'gcr.io/cloud-builders/npm'
   args: ["run", "build"]
-- name: "gcr.io/cloud-builders/my-app/gcloud"
+- name: "gcr.io/cloud-builders/gcloud"
   args: ["app", "deploy"]
 timeout: 1600s
