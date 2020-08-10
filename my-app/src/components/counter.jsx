@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+
 class Counter extends Component {
     state = { 
         count : 0,
@@ -23,9 +24,7 @@ class Counter extends Component {
              <button
              onClick={this.stop}
              className="btn btn-secondary btn-sm">stop</button>
-             <button
-             onClick={this.callName}
-             className="btn btn-secondary btn-sm">no  </button>
+             
         </div>
         
          );
