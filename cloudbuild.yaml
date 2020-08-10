@@ -5,6 +5,6 @@
 - name: node:10.16.0
   entrypoint: npm
   args: ["run", "build"]
-- name: "gcr.io/cloud-builders/gcloud"
+- name: "gcr.io/cloud-builders/my-app/gcloud"
   args: ["app", "deploy"]
-timeout: "1600s"
+- timeout: "1600s"
