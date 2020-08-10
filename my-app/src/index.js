@@ -9,7 +9,9 @@ import Chat from './components/chat';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Counter></Counter>
+    <Chat>
+      
+    </Chat>
   </React.StrictMode>,
   document.getElementById('root')
 );
