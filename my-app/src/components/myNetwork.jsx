@@ -38,7 +38,7 @@ class MyNetwork extends Component {
     
       render() {
         return (
-          <div ref={this.appRef} />
+          <div style={{height:600 +'px'}} ref={this.appRef} />
         );
       }
     
