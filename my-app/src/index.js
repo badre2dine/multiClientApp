@@ -6,10 +6,12 @@ import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.css'
 import Counter from './components/counter';
 import Chat from './components/chat';
+import MyNetwork from './components/myNetwork';
+
 
 ReactDOM.render(
   <React.StrictMode>
-    <Counter></Counter>
+  <MyNetwork></MyNetwork>
   </React.StrictMode>,
   document.getElementById('root')
 );
