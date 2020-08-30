@@ -20,7 +20,12 @@ var nodes = new DataSet([
     nodes: nodes,
     edges: edges
   };
-  var options = {};
+  var options = {
+    interaction: { hover: true },
+    manipulation: {
+      enabled: true,
+    },
+  };
 class MyNetwork extends Component {
     
 
