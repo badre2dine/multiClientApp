@@ -7,7 +7,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
+import axios from'axios'
 var nodes = new DataSet();
   
   // create an array with edges
@@ -32,7 +32,7 @@ class MyNetwork extends Component {
           action:""
          }
 
-        this.incidentMatrix=[]
+        this.incidentMatrix={'indices':[],'values':[]}
         this.lastNode=0;
         this.network = {};
         this.appRef = createRef();
@@ -94,7 +94,10 @@ class MyNetwork extends Component {
         const j =x+1-i*(2*n-3-i)/2
         return [i,j]
       }
-      saveData  = ()=>{
+      //first proposition 
+
+
+      saveData1  = ()=>{
         
         const n =nodes.length   
        
@@ -128,7 +131,55 @@ class MyNetwork extends Component {
          
          console.log(this.incidentMatrix)
       }
+        saveData= async ()=>{
+        const n =nodes.length   
+       
+        
+        var help=[]
+        var i=0
+        
+        
+        nodes.forEach((e,index,o)=>{
+          help[index]=i;
+         
+          i++
+        } );
+        i=0
+        this.incidentMatrix.indices=[]
+        this.incidentMatrix['values']=[]
+        edges.forEach((e)=>{
+          if(help[e.from]<help[e.to]){
+          this.incidentMatrix.indices[i]=[help[e.from],help[e.to]]
+          
+          
+          }
+          else {
+          
+          this.incidentMatrix.indices[i]=[help[e.to],help[e.from]]
+          
+          }
+          this.incidentMatrix['values'][i]=parseInt(e.label)
+          i++
+         } 
+         );
+        //  this.incidentMatrix['values'][i]=parseInt(e.label)
+        //   this.incidentMatrix.indices[i++]=[help[e.from],help[e.to]]
+          
+          
+          
+        //   this.incidentMatrix['values'][i]=parseInt(e.label)
+          
+        //   this.incidentMatrix.indices[i++]=[help[e.to],help[e.from]]
+         
+         
+         await axios.post(`http://localhost:5000/gett`,this.incidentMatrix
+        )
+         .then(res => {
+           console.log(res)
+         })
 
+      }
+      
 
       addEdge = (edgeData,callback)=>
       {
