@@ -13,7 +13,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 @app.route('/gett',methods=['GET', 'POST'])
 @cross_origin()
 def hello_world():
-    print()
+    
     data=flask.request.get_json()
     sparse_tensor = tf.sparse.SparseTensor(indices=data['indices'],
                                        values=data['values'],
@@ -25,5 +25,5 @@ def hello_world():
 
 
 
-print("sda")
+
 app.run(debug=True)
