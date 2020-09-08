@@ -1,4 +1,11 @@
-import { Button, Box, Container, Grid, Paper, ThemeProvider } from '@material-ui/core';
+import { Button, Box, Container, Grid, Paper, ThemeProvider, List, Avatar } from '@material-ui/core';
+import Plot from 'react-plotly.js';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import IconButton from '@material-ui/core/IconButton';
 import React, { Component, createRef } from "react";
 import { DataSet, Network } from 'vis-network/standalone/esm/vis-network';
 import TextField from '@material-ui/core/TextField';
@@ -8,15 +15,11 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import axios from'axios'
-var nodes = new DataSet();
+import TimelineIcon from '@material-ui/icons/Timeline';
+import DeleteIcon from '@material-ui/icons/Delete';
+
   
-  // create an array with edges
-  var edges = new DataSet();
-  
-  var data = {
-    nodes: nodes,
-    edges: edges
-  };
+ 
   
 class MyNetwork extends Component {
     
@@ -29,14 +32,30 @@ class MyNetwork extends Component {
           save:"",
           nodeName:0,
           edgeName:1,
-          action:""
+          action:" "
          }
-
-        this.incidentMatrix={'indices':[],'values':[]}
+         var data = [
+          {
+            x: ['2013-10-04 22:23:00', '2013-11-04 22:23:00', '2013-12-04 22:23:00'],
+            y: [1, 3, 6],
+            type: 'scatter'
+          }
+        ];
+        
+           
+        this.incidentMatrix={'indices':[],'values':[]};
+        this.nodes=new DataSet()
+        this.edges=new DataSet()
         this.lastNode=0;
+        this.groups={}
         this.network = {};
         this.appRef = createRef();
+        this.plotRef = createRef();
         this.options = {
+          nodes:{shape:'circle',
+                physics:true,
+                mass:1},
+          groups:this.groups,
           interaction: { hover: true },
           manipulation: {
             enabled: true,
@@ -45,7 +64,12 @@ class MyNetwork extends Component {
           },
         };
       }
-      
+      stabl = ()=>{
+
+
+          this.network.stabilize();
+
+      }
       // for any any input value name change its state 
       handleChange = input => event => {
         this.setState({[input]:event.target.value})
@@ -63,7 +87,7 @@ class MyNetwork extends Component {
           callback(nodeData);
           
           this.setState({open: false});
-          
+            
         }})
         
       }
@@ -77,7 +101,7 @@ class MyNetwork extends Component {
       n=5
       matrix_to_vect(i,j)
       {
-        const n =nodes.length   
+        const n =this.nodes.length   
         const index = i*(2*n-3-i)/2+j-1
         console.log(index)
         console.log(index)
@@ -89,7 +113,7 @@ class MyNetwork extends Component {
       vect_to_matrix(x)
       {
 
-        const n =nodes.length   
+        const n =this.nodes.length   
         const i =Math.trunc((-Math.sqrt(-8*x+4*(n**2)-4*n+1)+2*n-1)/2)
         const j =x+1-i*(2*n-3-i)/2
         return [i,j]
@@ -99,7 +123,7 @@ class MyNetwork extends Component {
 
       saveData1  = ()=>{
         
-        const n =nodes.length   
+        const n =this.nodes.length   
        
         
         var help=[]
@@ -108,13 +132,13 @@ class MyNetwork extends Component {
         this.incidentMatrix=new Array(n*(n-1)/2)
         for (var j=0;j<n*(n-1)/2;j++)
           this.incidentMatrix[j]=0
-        nodes.forEach((e,index,o)=>{
+        this.nodes.forEach((e,index,o)=>{
           help[index]=i;
          
           i++
         } );
         
-        edges.forEach((e)=>{
+        this.edges.forEach((e)=>{
           if(help[e.from]<help[e.to]){
           this.incidentMatrix[this.matrix_to_vect(help[e.from],help[e.to])]=1
           console.log([help[e.from],help[e.to]])
@@ -129,17 +153,19 @@ class MyNetwork extends Component {
          } 
          );
          
-         console.log(this.incidentMatrix)
+         
       }
         saveData= async ()=>{
-        const n =nodes.length   
-       
+
+        
+        const n =this.nodes.length   
+        
         
         var help=[]
         var i=0
         
         
-        nodes.forEach((e,index,o)=>{
+        this.nodes.forEach((e,index,o)=>{
           help[index]=i;
          
           i++
@@ -147,7 +173,7 @@ class MyNetwork extends Component {
         i=0
         this.incidentMatrix.indices=[]
         this.incidentMatrix['values']=[]
-        edges.forEach((e)=>{
+        this.edges.forEach((e)=>{
           if(help[e.from]<help[e.to]){
           this.incidentMatrix.indices[i]=[help[e.from],help[e.to]]
           
@@ -160,7 +186,7 @@ class MyNetwork extends Component {
           }
           this.incidentMatrix['values'][i]=parseInt(e.label)
           i++
-         } 
+         }
          );
         //  this.incidentMatrix['values'][i]=parseInt(e.label)
         //   this.incidentMatrix.indices[i++]=[help[e.from],help[e.to]]
@@ -172,8 +198,7 @@ class MyNetwork extends Component {
         //   this.incidentMatrix.indices[i++]=[help[e.to],help[e.from]]
          
          
-         await axios.post(`http://localhost:5000/gett`,this.incidentMatrix
-        )
+         await axios.post(`http://localhost:5000/save`,{matrix:this.incidentMatrix,nodes:this.nodes.get(),edges:this.edges.get()}       )
          .then(res => {
            console.log(res)
          })
@@ -200,11 +225,9 @@ class MyNetwork extends Component {
       }
       componentDidMount() {
         
-        this.network = new Network(this.appRef.current, data, this.options);
-        this.network.on("click",(e)=> {
-            this.selectedNodes=e.nodes;
-            this.selectedEdges=e.edges;
-        })
+        this.network = new Network(this.appRef.current, {nodes:this.nodes,edges:this.edges}, this.options);
+        
+        
         
       }
        handleClickOpen = () => {
@@ -224,6 +247,13 @@ class MyNetwork extends Component {
             case 32 : console.log(this.network)
           }
 
+      }
+      generate(element) {
+        return [0, 1, 2].map((value) =>
+          React.cloneElement(element, {
+            key: value,
+          }),
+        );
       }
       render() {
 
@@ -285,12 +315,59 @@ class MyNetwork extends Component {
               container
               direction="row"
               
-             >    
-             <Grid item xs={12} md={2}><Button onClick={this.saveData} variant="contained"  color="primary">Hello World</Button></Grid>
+              >    
+                <Grid container item xs={12} md={3}>
+              
+                  <Grid item xs md>
+                  <List   dense>
+                    {this.generate(
+                    <ListItem button>
+                      
+                      <ListItemIcon>
+                       <TimelineIcon />
+                      </ListItemIcon>
+       
+                      
+                      <ListItemText
+                        primary="Single-line item"
+                       
+                      />
+                      <ListItemSecondaryAction>
+                        <IconButton edge="end" aria-label="delete">
+                          <DeleteIcon />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  )}
+                   </List></Grid>
+                   <Grid container item xs={4} md={12}>
+                   <Grid   xs={12} md={6} item  >  <Button style={{width:"100%"}} onClick={this.saveData} variant="contained"  color="primary">save</Button></Grid>
+                   <Grid   xs={12} md={6} item  >  <Button style={{width:"100%"}}  onClick={this.stabl} variant="contained"  color="primary">new</Button></Grid>
+                   </Grid>
+                
+
+                </Grid>
                   
-                  <Grid item xs={12} md={10} > <Paper onKeyDown={this.keyHandle} style={{height:600 +'px',
-                width:100+"%"}} ref={this.appRef} /></Grid>
-                 
+                <Grid item xs={12} md={9} > 
+                <Paper onKeyDown={this.keyHandle} style={{height:600 +'px',
+                width:100+"%"}} ref={this.appRef} />
+                </Grid>
+                <Grid item xs={12} md={12} > 
+                
+                <Plot
+        data={[
+          {
+            x: [1, 2, 3],
+            y: [2, 6, 3],
+            type: 'scatter',
+            mode: 'lines+markers',
+            marker: {color: 'red'},
+          },
+          {type: 'bar', x: [1, 2, 3], y: [2, 5, 3]},
+        ]}
+        layout={ {width: 320, height: 240, title: 'A Fancy Plot'} }
+      />
+                </Grid>
               </Grid>
               
               
