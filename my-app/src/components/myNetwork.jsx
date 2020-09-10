@@ -344,15 +344,7 @@ class MyNetwork extends Component {
                    <Grid   xs={12} md={6} item  >  <Button style={{width:"100%"}} onClick={this.saveData} variant="contained"  color="primary">save</Button></Grid>
                    <Grid   xs={12} md={6} item  >  <Button style={{width:"100%"}}  onClick={this.stabl} variant="contained"  color="primary">new</Button></Grid>
                    </Grid>
-                
-
-                </Grid>
-                  
-                <Grid item xs={12} md={9} > 
-                <Paper onKeyDown={this.keyHandle} style={{height:600 +'px',
-                width:100+"%"}} ref={this.appRef} />
-                </Grid>
-                <Grid item xs={12} md={12} > 
+                   <Grid item xs={12} md={12} > 
                 
                 <Plot
         data={[
@@ -368,6 +360,14 @@ class MyNetwork extends Component {
         layout={ {width: 320, height: 240, title: 'A Fancy Plot'} }
       />
                 </Grid>
+
+                </Grid>
+                  
+                <Grid item xs={12} md={9} > 
+                <Paper onKeyDown={this.keyHandle} style={{height:600 +'px',
+                width:100+"%"}} ref={this.appRef} />
+                </Grid>
+                
               </Grid>
               
               
