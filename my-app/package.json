@@ -19,7 +19,7 @@
     "vis-network": "^8.2.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts --max-old-space-size=4096 start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
